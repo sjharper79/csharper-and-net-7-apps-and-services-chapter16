@@ -10,6 +10,24 @@
         </div>
     </div>
     <div class="col">
-        More components coming soon.
+        <DialogBox DialogTitle="Delete Database"
+            PrimaryButtonText="Yes"
+            SecondaryButtonText="No"
+            OnClickPrimary="Yes_Click"
+            OnClickSecondary="No_Click">
+            Are you sure you want to delete the entire database? Really?
+        </DialogBox>
+
     </div>
 </div>
+
+@code {
+    private void Yes_Click(MouseEventArgs e)
+    {
+        Console.WriteLine("User clicked 'Primary' button at ({0}, {1}).", e.ClientX, e.ClientY);
+    }
+    private void No_Click(MouseEventArgs e)
+    {
+        Console.WriteLine("User click 'Secondary' button at ({0}, {1}).", e.ClientX, e.ClientY);
+    }
+}
