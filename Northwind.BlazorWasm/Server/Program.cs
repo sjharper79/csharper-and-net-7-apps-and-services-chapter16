@@ -1,9 +1,19 @@
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Mvc;
+using Packt.Shared;
+using System.Text.Json.Serialization;
+using HttpJsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<HttpJsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddNorthwindContext();
 
 var app = builder.Build();
 
@@ -23,6 +33,47 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.MapGet("api/employees",
+    ([FromServices] NorthwindContext db) =>
+        Results.Json(db.Employees))
+    .WithName("GetEmployees")
+    .Produces<Employee[]>(StatusCodes.Status200OK);
+
+app.MapGet("api/employees/{id:int}", (
+    [FromServices] NorthwindContext db,
+    [FromRoute] int id) =>
+    {
+        Employee? employee = db.Employees.Find(id);
+        if (employee == null)
+        {
+            return Results.NotFound();
+        }
+        else
+        {
+            return Results.Json(employee);
+        }
+    })
+    .WithName("GetEmployeesById")
+    .Produces<Employee>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status404NotFound);
+
+app.MapGet("api/employees/{country}", (
+    [FromServices] NorthwindContext db,
+    [FromRoute] string country) =>
+        Results.Json(db.Employees.Where(employee =>
+            employee.Country == country)))
+    .WithName("GetEmployeesByCountry")
+    .Produces<Employee[]>(StatusCodes.Status200OK);
+
+app.MapPost("api/employees", async ([FromBody] Employee employee,
+    [FromServices] NorthwindContext db) =>
+    {
+        db.Employees.Add(employee);
+        await db.SaveChangesAsync();
+        return Results.Created($"api/employees/{employee.EmployeeId}", employee);
+    })
+    .Produces<Employee>(StatusCodes.Status201Created);
 
 app.MapRazorPages();
 app.MapControllers();
