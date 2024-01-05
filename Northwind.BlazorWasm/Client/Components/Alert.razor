@@ -1,0 +1,24 @@
+﻿<div class="alert alert-@ColorTheme d-flex align-items-center @(IsDismissible ? " alert-dismissible fade show" :"")" role="alert">
+    <div>
+        <h4 class="alert-heading"><i class="@Icon"></i></h4>
+        @Message
+        @if (IsDismissible)
+        {
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsDismissible { get; set; }
+    [Parameter]
+    public string Icon { get; set; }
+    [Parameter]
+    public string ColorTheme { get; set; } = BootstrapColors.Primary;
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public string? Message { get; set; }
+
+}

@@ -20,6 +20,15 @@
 
     </div>
 </div>
+<div class="row">
+    <div class="col">
+        <Alert IsDismissible="true"
+               Icon="@(BootstrapIcons.ExclamationTriangleFill)"
+               ColorTheme="@(BootstrapColors.Warning)"
+               Title="Warning"
+               Message="Deleting the database cannot be undone."/>
+    </div>
+</div>
 
 @code {
     private void Yes_Click(MouseEventArgs e)
